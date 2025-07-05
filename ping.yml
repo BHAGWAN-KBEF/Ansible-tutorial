@@ -1,0 +1,20 @@
+---
+- name: Ping the servers
+  hosts: all
+  gather_facts: Yes
+  become: true
+
+  tasks:
+    - name: Ping all database server
+      ping:
+
+    - name: install nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Ensure nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: true

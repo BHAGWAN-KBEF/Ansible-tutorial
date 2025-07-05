@@ -1,0 +1,49 @@
+---
+- name: update servers,install docker,confirm docker,add docker group,confirm docker service
+  hosts: all
+  gather_facts: Yes
+  become: true
+  tasks:
+    - name: update servers
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+    - name: install docker
+      apt:
+        name: docker.io
+        state: present
+    - name: confirm docker
+      command: docker --version
+      register: docker_version
+    - name: display docker version
+      debug:
+        msg: "Docker version: {{ docker_version.stdout }}"
+    - name: add docker group
+      user:
+        name: docker
+        group: docker
+        append: yes
+    - name: confirm docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+    - name: ensure docker is running
+      command: docker ps
+      register: docker_ps
+    - name: display docker ps output
+      debug:
+        msg: "Docker PS output: {{ docker_ps.stdout }}"
+
+    - name: Add user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+    
+    - name: ensure docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+
